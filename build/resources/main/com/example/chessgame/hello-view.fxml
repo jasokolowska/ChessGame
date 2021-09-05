@@ -11,7 +11,7 @@
 <BorderPane fx:controller="com.example.chessgame.HelloController"
             xmlns:fx="http://javafx.com/fxml">
     <top>
-        <Label text="Checkers Game" BorderPane.alignment="CENTER"
+        <Label text="Chess Game" BorderPane.alignment="CENTER"
         style="-fx-font-size: 20;
                 -fx-font-family: Constantia;
                 -fx-font-style: bold;
