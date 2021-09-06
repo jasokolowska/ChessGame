@@ -12,7 +12,8 @@ public class Main {
         System.out.println("Current figure is: " + chess.getFigure(2,6));
         System.out.println(chess);
 
-
+        chess.move(3,3, 4,4);
+        chess.move(2,6, 4,8);
         System.out.println(chess);
     }
 }

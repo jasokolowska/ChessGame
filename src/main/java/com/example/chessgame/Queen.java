@@ -1,16 +1,9 @@
 package com.example.chessgame;
 
-public class Queen implements Figure{
-    private String color;
-    private String symbol;
+public class Queen extends Figure{
 
     public Queen(String color) {
-        this.color = color;
-        this.symbol = "Q";
-    }
-
-    @Override
-    public String toString() {
-        return this.symbol;
+        super(color);
+        super.symbol = "Q";
     }
 }
