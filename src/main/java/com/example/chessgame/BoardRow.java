@@ -15,12 +15,12 @@ public class BoardRow {
     }
 
     public Figure getFigure(int col) {
-        return row.get(col-1);
+        return row.get(col);
     }
 
     public void setFigure(int col, Figure figure){
-        row.remove(col-1);
-        row.add(col-1, figure);
+        row.remove(col);
+        row.add(col, figure);
     }
 
     @Override

@@ -7,6 +7,8 @@ import java.util.List;
 public class Board {
 
     private List<BoardRow> board;
+    private Player player;
+    private Computer computer;
 
     public Board() {
         this.board = new LinkedList<>();
@@ -16,52 +18,54 @@ public class Board {
     }
 
     public Figure getFigure(int row, int col){
-        BoardRow currentRow = board.get(row-1);
+        BoardRow currentRow = board.get(row);
         return currentRow.getFigure(col);
     }
     public void setFigure(int row, int col, Figure figure){
-        BoardRow currentRow = board.get(row-1);
+        BoardRow currentRow = board.get(row);
         currentRow.setFigure(col, figure);
     }
 
-
     public boolean move(int row1, int col1, int row2, int col2) {
 
-        if (getFigure(row1, col1).toString() != " " || getFigure(row2, col2).toString() == " " &&
-                (row2 < 8 && row2 >= 0 && col2 < 8 )) {
+        Figure figure = getFigure(row1, col1);
+        Figure targetFigure = getFigure(row2, col2);
+        List<Coordinates> possibleMoves = figure.getPossibleMoves(row1, col1);
+        System.out.println("possible moves: " + possibleMoves);
+        List<Coordinates> availableMoves = checkAvailableMoves(possibleMoves, row2, col2);
+        System.out.println("available moves: " + availableMoves);
 
-            if (row1 - row2 == col1 - col2 || row1 + col1 == row2 + col2) {
-
-                if (Math.abs(row1 - row2) == 1) {
-                    Figure figure = getFigure(row1, col1);
-                    setFigure(row1, col1, new None("black"));
-                    setFigure(row2, col2, figure);
-                    System.out.println("Figure: " + figure.toString() + "(" + row1 + "," + col1 + ")" +" has been moved to field " + row2 + "," + col2);
-                    return true;
-//                } else if (row1 - row2 == 2) {
-                    //sprawdz czy na kolejnym polu znajduje sie sie pionek z przeciwnym znakiem
-                    // zbij pionek i wykonaj ruch
-                } else {
-                    if (getFigure(row1, col1).toString() != "Q") {
-                        System.out.println("Only Queen can move more than one field at a time");
-                        return false;
-                    } else {
-                        Figure figure = getFigure(row1, col1);
-                        setFigure(row1, col1, new None("black"));
-                        setFigure(row2, col2, figure);
-                        System.out.println("Figure: " + figure.toString() + "(" + row1 + "," + col1 + ")" +" has been moved to field " + row2 + "," + col2);
-                        return true;
-                    }
-                }
-            } else {
-                System.out.println("This move is not allowed, you can move diagonally");
-                return false;
-            }
-        } else {
-            System.out.println("Move not possible");
+        if (availableMoves.size() < possibleMoves.size() && (targetFigure.getSymbol().equals(" "))) {
+            System.out.println("Figure cannot pass another figures");
             return false;
         }
+
+        if (availableMoves.contains(new Coordinates(row2, col2))) {
+            moveFigure(row1, col1, row2, col2, figure);
+            if (!targetFigure.getSymbol().equals(" ")) {
+                player.addCapturedFigure(figure);
+            }
+            return true;
+        }
+        return false;
     }
+
+    private void moveFigure(int row1, int col1, int row2, int col2, Figure figure) {
+        setFigure(row1, col1, new None("none"));
+        setFigure(row2, col2, figure);
+    }
+
+    private List<Coordinates> checkAvailableMoves(List<Coordinates> possibleMoves, int row, int col) {
+        List<Coordinates> availableMoves = new LinkedList<>();
+
+        for (Coordinates possibleMove : possibleMoves) {
+            if (getFigure(possibleMove.getRow(), possibleMove.getColumn()) instanceof None) {
+               availableMoves.add(possibleMove);
+            }
+        }
+        return availableMoves;
+    }
+
 
     public String toString(){
         Iterator<BoardRow> iterator = board.listIterator();
