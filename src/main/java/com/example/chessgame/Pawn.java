@@ -14,18 +14,22 @@ public class Pawn extends Figure {
     public List<Coordinates> getPossibleMoves(int row, int col) {
         List<Coordinates> possibleMoves = new LinkedList<>();
 
+        if ((getColor().equals("white")) && row > 0) {
+            possibleMoves.add(new Coordinates(row-1, col));
+            possibleMoves.add(new Coordinates(row-1, col-1));
+            possibleMoves.add(new Coordinates(row-1, col+1));
+        }
         if ((getColor().equals("white")) && row == 6) {
             possibleMoves.add(new Coordinates((row - 2), col));
-        }
-        if (getColor().equals("white") && row > 0) {
-            possibleMoves.add(new Coordinates((row - 1), col));
         }
 
         if ((getColor().equals("black")) && row == 1) {
             possibleMoves.add(new Coordinates((row + 2), col));
         }
         if (getColor().equals("black") && row < 7) {
-            possibleMoves.add(new Coordinates((row + 1), col));
+            possibleMoves.add(new Coordinates(row+1, col));
+            possibleMoves.add(new Coordinates(row+1, col-1));
+            possibleMoves.add(new Coordinates(row+1, col+1));
         }
         return possibleMoves;
     }

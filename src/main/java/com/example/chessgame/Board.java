@@ -11,6 +11,8 @@ public class Board {
     private Computer computer;
 
     public Board() {
+        this.player = new Player();
+        this.computer = new Computer();
         this.board = new LinkedList<>();
         for (int i = 0; i < 8; i++){
             this.board.add(new BoardRow());
@@ -31,9 +33,7 @@ public class Board {
         Figure figure = getFigure(row1, col1);
         Figure targetFigure = getFigure(row2, col2);
         List<Coordinates> possibleMoves = figure.getPossibleMoves(row1, col1);
-        System.out.println("possible moves: " + possibleMoves);
-        List<Coordinates> availableMoves = checkAvailableMoves(possibleMoves, row2, col2);
-        System.out.println("available moves: " + availableMoves);
+        List<Coordinates> availableMoves = checkAvailableMoves(possibleMoves, row2, col2, figure, targetFigure);
 
         if (availableMoves.size() < possibleMoves.size() && (targetFigure.getSymbol().equals(" "))) {
             System.out.println("Figure cannot pass another figures");
@@ -55,12 +55,16 @@ public class Board {
         setFigure(row2, col2, figure);
     }
 
-    private List<Coordinates> checkAvailableMoves(List<Coordinates> possibleMoves, int row, int col) {
+    private List<Coordinates> checkAvailableMoves(List<Coordinates> possibleMoves, int row, int col, Figure figure, Figure targetFigure) {
         List<Coordinates> availableMoves = new LinkedList<>();
 
-        for (Coordinates possibleMove : possibleMoves) {
-            if (getFigure(possibleMove.getRow(), possibleMove.getColumn()) instanceof None) {
-               availableMoves.add(possibleMove);
+        for (Coordinates pm : possibleMoves) {
+            if (getFigure(pm.getRow(), pm.getColumn()) instanceof None) {
+               availableMoves.add(pm);
+            } else {
+                if (pm.equals(new Coordinates(row, col)) && !figure.getColor().equals(targetFigure.getColor())) {
+                    availableMoves.add(pm);
+                }
             }
         }
         return availableMoves;
