@@ -1,5 +1,9 @@
 package com.example.chessgame;
 
+import com.example.chessgame.figures.Figure;
+import com.example.chessgame.figures.FigureColor;
+import com.example.chessgame.figures.None;
+
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
@@ -10,7 +14,7 @@ public class BoardRow {
     public BoardRow() {
         this.row = new LinkedList<>();
         for (int i = 0; i < 8; i++){
-            this.row.add(new None("white"));
+            this.row.add(new None(FigureColor.WHITE));
         }
     }
 

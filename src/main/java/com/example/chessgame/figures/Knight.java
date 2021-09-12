@@ -1,0 +1,29 @@
+package com.example.chessgame.figures;
+
+import com.example.chessgame.Coordinates;
+
+import java.util.LinkedList;
+import java.util.List;
+
+public class Knight extends Figure{
+
+    public Knight(FigureColor color) {
+        super(color);
+        super.symbol = "k";
+    }
+
+    public List<Coordinates> checkPossibleMoves(int row, int col) {
+        List<Coordinates> possibleMoves = new LinkedList<>();
+        
+        possibleMoves.add(new Coordinates(row + 1, col + 2));
+        possibleMoves.add(new Coordinates(row + 1, col - 2));
+        possibleMoves.add(new Coordinates(row - 1, col + 2));
+        possibleMoves.add(new Coordinates(row - 1, col - 2));
+        possibleMoves.add(new Coordinates(row + 2, col + 1));
+        possibleMoves.add(new Coordinates(row + 2, col - 1));
+        possibleMoves.add(new Coordinates(row - 2, col + 1));
+        possibleMoves.add(new Coordinates(row - 2, col - 1));
+
+        return possibleMoves;
+    }
+}

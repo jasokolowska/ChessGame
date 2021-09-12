@@ -1,17 +1,19 @@
-package com.example.chessgame;
+package com.example.chessgame.figures;
+
+import com.example.chessgame.Coordinates;
 
 import java.util.LinkedList;
 import java.util.List;
 
-abstract class Figure {
+public abstract class Figure {
     protected String symbol;
-    private String color;
+    private FigureColor color;
 
-    public Figure(String color) {
+    public Figure(FigureColor color) {
         this.color = color;
     }
 
-    public String getColor() {
+    public FigureColor getColor() {
         return color;
     }
 
@@ -24,7 +26,8 @@ abstract class Figure {
         return this.symbol;
     }
 
-    public List<Coordinates> getPossibleMoves(int row1, int col1) {
+    public List<Coordinates> checkPossibleMoves(int row1, int col1) {
         return new LinkedList<Coordinates>();
     }
+
 }
