@@ -9,11 +9,16 @@ import java.util.List;
 public class Board {
 
     private final List<BoardRow> board = new LinkedList<>();
+    private FigureColor whoseMove = FigureColor.WHITE;
 
     public Board() {
-        for (int i = 0; i < 8; i++){
+        for (int i = 0; i < 8; i++) {
             this.board.add(new BoardRow());
         }
+    }
+
+    public void switchPlayer(){
+        whoseMove = (whoseMove == FigureColor.WHITE) ? FigureColor.BLACK : FigureColor.WHITE;
     }
 
     public Figure getFigure(int row, int col){
@@ -35,6 +40,11 @@ public class Board {
         List<Coordinates> currentMoves = checkCurrentMoves(row1, col1, row2, col2, figure);
         System.out.println("available moves: " + currentMoves);
 
+//        //sprawdzic ktory kolor ma ruch
+//        if (whoseMove == FigureColor.WHITE) {
+//
+//        }
+
         if (targetFigure instanceof None || (targetFigure instanceof Figure && !targetFigure.getColor().equals(figure.getColor()))) {
             if (currentMoves.contains(new Coordinates(row2, col2)) && possibleMoves.contains(new Coordinates(row2, col2))) {
                 moveFigure(row1, col1, row2, col2, figure);
@@ -45,9 +55,8 @@ public class Board {
             }
         } else {
             System.out.println("There is a piece with same color on this destination field");
+            return false;
         }
-
-        return false;
     }
 
     private List<Coordinates> checkCurrentMoves(int row1, int col1, int row2, int col2, Figure figure) {

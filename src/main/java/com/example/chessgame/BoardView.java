@@ -1,6 +1,7 @@
 package com.example.chessgame;
 
 import javafx.application.Application;
+import javafx.event.EventType;
 import javafx.fxml.FXMLLoader;
 import javafx.geometry.HPos;
 import javafx.geometry.Insets;
@@ -11,6 +12,7 @@ import javafx.scene.ImageCursor;
 import javafx.scene.Scene;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
+import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
@@ -20,26 +22,27 @@ import java.io.IOException;
 import java.util.List;
 
 public class BoardView extends Application {
-
     private Image imageback = new Image("file:src/main/resources/chess_board.png");
-    private Image whitePawn = new Image("file:src/main/resources/white_pawn.png");
-    private Image blackKing = new Image("file:src/main/resources/black_king.png");
 
     @Override
     public void start(Stage stage) throws Exception {
         GridPane grid = getGridPane();
 
-        ImageView whitePawnFigure = new ImageView(whitePawn);
-        grid.add(whitePawnFigure, 2,5);
-
-        ImageView blackKingFigure = new ImageView(blackKing);
-        grid.add(blackKingFigure, 6,7);
-
         Scene scene = new Scene(grid, 500, 500, Color.BLACK);
+        Game game = new Game(new Board(), grid);
 
+        grid.setOnMouseClicked(e -> {
+            int x = (int) (e.getX()/65);
+            int y = (int) (e.getY()/65);
+            System.out.println(x);
+            System.out.println(y);
+            game.doClick(x,y);
+        });
         stage.setTitle("Chess");
         stage.setScene(scene);
         stage.show();
+
+
     }
 
     private GridPane getGridPane() {

@@ -1,9 +1,91 @@
 package com.example.chessgame;
 
-public class Game {
-    private Board board;
+import com.example.chessgame.figures.*;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
+import javafx.scene.layout.GridPane;
 
-    public Game() {
-        this.board = new Board();
+public class Game {
+    private Image whitePawn = new Image("file:src/main/resources/white_pawn.png");
+    private Image blackPawn = new Image("file:src/main/resources/black_pawn.png");
+    private Image whiteRook = new Image("file:src/main/resources/white_rook.png");
+    private Image blackRook = new Image("file:src/main/resources/black_rook.png");
+    private Image whiteKnight = new Image("file:src/main/resources/white_knight.png");
+    private Image blackKnight = new Image("file:src/main/resources/black_knight.png");
+    private Image whiteBishop = new Image("file:src/main/resources/white_bishop.png");
+    private Image blackBishop = new Image("file:src/main/resources/black_bishop.png");
+    private Image whiteQueen = new Image("file:src/main/resources/white_queen.png");
+    private Image blackQueen = new Image("file:src/main/resources/black_queen.png");
+    private Image whiteKing = new Image("file:src/main/resources/white_king.png");
+    private Image blackKing = new Image("file:src/main/resources/black_king.png");
+
+    private Board board;
+    private GridPane gridPane;
+    private int oldX = -1;
+    private int oldY = -1;
+
+    public Game(Board board, GridPane gridPane) {
+        this.board = board;
+        this.gridPane = gridPane;
+        board.init();
+        displayOnGrid();
+    }
+
+    public void doClick(int x, int y) {
+        if (oldX == -1){
+            oldX = x;
+            oldY = y;
+        }else {
+            if (board.move(oldY, oldX, y, x)){
+                oldX = -1;
+                oldY = -1;
+                displayOnGrid();
+                board.switchPlayer();
+            } else {
+                oldX = -1;
+                oldY = -1;
+            }
+        }
+    }
+
+    private void displayOnGrid() {
+        gridPane.getChildren().clear();
+
+        for (int row = 0; row < 8; row++) {
+            for (int col = 0; col < 8; col++){
+                Image image = null;
+                Figure figure = board.getFigure(row, col);
+                if (figure.getColor() == FigureColor.BLACK){
+                    if (figure instanceof Pawn)
+                        image = blackPawn;
+                    else if (figure instanceof Bishop)
+                        image = blackBishop;
+                    else if (figure instanceof Rook)
+                        image = blackRook;
+                    else if (figure instanceof Knight)
+                        image = blackKnight;
+                    else if (figure instanceof King)
+                        image = blackKing;
+                    else if (figure instanceof Queen)
+                        image = blackQueen;
+                } else {
+                    if (figure instanceof Pawn)
+                        image = whitePawn;
+                    else if (figure instanceof Bishop)
+                        image = whiteBishop;
+                    else if (figure instanceof Rook)
+                        image = whiteRook;
+                    else if (figure instanceof Knight)
+                        image = whiteKnight;
+                    else if (figure instanceof King)
+                        image = whiteKing;
+                    else if (figure instanceof Queen)
+                        image = whiteQueen;
+                }
+
+                gridPane.add(new ImageView(image), col,row);
+            }
+        }
+
     }
 }
