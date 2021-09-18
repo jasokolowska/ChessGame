@@ -31,6 +31,14 @@ public class Queen extends Figure{
         for (int i = 1; (row-i) >= 0 && (col-i) >= 0; i++) {
             possibleMoves.add(new Coordinates(row - i,col - i));
         }
+
+        for (int i = 1; (row+i) < 8 && (col-i) >= 0; i++) {
+            possibleMoves.add(new Coordinates(row + i,col - i));
+        }
+
+        for (int i = 1; (row-i) >= 0 && (col+i) < 8; i++) {
+            possibleMoves.add(new Coordinates(row - i,col + i));
+        }
         return possibleMoves;
     }
 }
