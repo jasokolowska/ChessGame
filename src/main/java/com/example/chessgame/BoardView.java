@@ -3,10 +3,7 @@ package com.example.chessgame;
 import javafx.application.Application;
 import javafx.event.EventType;
 import javafx.fxml.FXMLLoader;
-import javafx.geometry.HPos;
-import javafx.geometry.Insets;
-import javafx.geometry.Orientation;
-import javafx.geometry.Pos;
+import javafx.geometry.*;
 import javafx.scene.Group;
 import javafx.scene.ImageCursor;
 import javafx.scene.Scene;
@@ -31,13 +28,16 @@ public class BoardView extends Application {
         Scene scene = new Scene(grid, 500, 500, Color.BLACK);
         Game game = new Game(new Board(), grid);
 
+
         grid.setOnMouseClicked(e -> {
-            int x = (int) (e.getX()/65);
-            int y = (int) (e.getY()/65);
+            int x = (int) (e.getX() / 64);
+            int y = (int) (e.getY() / 64);
             System.out.println(x);
             System.out.println(y);
-            game.doClick(x,y);
+            game.doClick(x, y);
         });
+
+
         stage.setTitle("Chess");
         stage.setScene(scene);
         stage.show();
@@ -52,11 +52,11 @@ public class BoardView extends Application {
 
         GridPane grid = new GridPane();
         grid.setAlignment(Pos.CENTER);
-        grid.setPadding(new Insets(10, 10,10,10));
-        grid.setHgap(20);
-        grid.setVgap(10);
-        setColumnWidthAndRowHeight(grid, 41.5, 51.5);
-//        grid.setGridLinesVisible(true);
+        grid.setPadding(new Insets(10, 10, 10, 10));
+//        grid.setHgap(20);
+//        grid.setVgap(10);
+        setColumnWidthAndRowHeight(grid, 62.5, 62);
+        grid.setGridLinesVisible(true);
         grid.setBackground(background);
         return grid;
     }
@@ -64,10 +64,12 @@ public class BoardView extends Application {
     private void setColumnWidthAndRowHeight(GridPane grid, double columnWidth, double rowHeight) {
         for (int i = 0; i < 8; i++) {
             ColumnConstraints column = new ColumnConstraints(columnWidth);
+            column.setHalignment(HPos.CENTER);
             grid.getColumnConstraints().add(column);
         }
         for (int i = 0; i < 8; i++) {
             RowConstraints row = new RowConstraints(rowHeight);
+            row.setValignment(VPos.CENTER);
             grid.getRowConstraints().add(row);
         }
     }

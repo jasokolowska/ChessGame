@@ -1,9 +1,13 @@
 package com.example.chessgame;
 
 import com.example.chessgame.figures.*;
+import javafx.geometry.Pos;
+import javafx.scene.effect.BlendMode;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.GridPane;
+import javafx.scene.paint.Color;
+import javafx.scene.shape.Rectangle;
 
 public class Game {
     private Image whitePawn = new Image("file:src/main/resources/white_pawn.png");
@@ -23,10 +27,12 @@ public class Game {
     private GridPane gridPane;
     private int oldX = -1;
     private int oldY = -1;
+    private boolean endOfGame;
 
     public Game(Board board, GridPane gridPane) {
         this.board = board;
         this.gridPane = gridPane;
+        this.endOfGame = false;
         board.init();
         displayOnGrid();
     }
@@ -35,6 +41,7 @@ public class Game {
         if (oldX == -1){
             oldX = x;
             oldY = y;
+            markClicked(y, x);
         }else {
             if (board.move(oldY, oldX, y, x)){
                 oldX = -1;
@@ -87,5 +94,15 @@ public class Game {
             }
         }
 
+    }
+
+    private void markClicked(int x, int y) {
+        Rectangle rectangle = new Rectangle(62.5,62);
+        rectangle.setFill(Color.TRANSPARENT);
+        rectangle.setStroke(Color.AQUAMARINE);
+//        rectangle.setBlendMode(BlendMode.SOFT_LIGHT);
+        rectangle.setStrokeWidth(2.5);
+
+        gridPane.add(rectangle, oldX, oldY);
     }
 }
