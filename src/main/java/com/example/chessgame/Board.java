@@ -133,7 +133,7 @@ public class Board {
                 getFigure(coordinates.getRow(), coordinates.getColumn())).contains(opponentCoor);
     }
 
-    private List<Coordinates> availableMoves(int row1, int col1, int row2, int col2, Figure figure) {
+    public List<Coordinates> availableMoves(int row1, int col1, int row2, int col2, Figure figure) {
 
         List<Coordinates> availableMoves = new LinkedList<>();
         List<Coordinates> possibleMoves = figure.checkPossibleMoves(row1, col1);

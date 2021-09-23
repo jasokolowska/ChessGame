@@ -25,13 +25,16 @@ public class BoardView extends Application {
     public void start(Stage stage) throws Exception {
         GridPane grid = getGridPane();
 
-        Scene scene = new Scene(grid, 500, 500, Color.BLACK);
+        Scene scene = new Scene(grid, 480, 480, Color.WHITE);
         Game game = new Game(new Board(), grid);
 
 
         grid.setOnMouseClicked(e -> {
-            int x = (int) (e.getX() / 64);
-            int y = (int) (e.getY() / 64);
+            System.out.println(e.getX());
+            System.out.println(e.getY());
+
+            int x = (int) (e.getX() / 60);
+            int y = (int) (e.getY() / 60);
             System.out.println(x);
             System.out.println(y);
             game.doClick(x, y);
@@ -52,12 +55,12 @@ public class BoardView extends Application {
 
         GridPane grid = new GridPane();
         grid.setAlignment(Pos.CENTER);
-        grid.setPadding(new Insets(10, 10, 10, 10));
-//        grid.setHgap(20);
-//        grid.setVgap(10);
-        setColumnWidthAndRowHeight(grid, 62.5, 62);
-        grid.setGridLinesVisible(true);
+        grid.setPadding(new Insets(0, 0, 0, 0));
+        grid.setHgap(0);
+        grid.setVgap(0);
+        setColumnWidthAndRowHeight(grid, 59.5, 59.5);
         grid.setBackground(background);
+        grid.setGridLinesVisible(true);
         return grid;
     }
 

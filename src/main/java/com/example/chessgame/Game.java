@@ -9,6 +9,8 @@ import javafx.scene.layout.GridPane;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
 
+import java.util.List;
+
 public class Game {
     private Image whitePawn = new Image("file:src/main/resources/white_pawn.png");
     private Image blackPawn = new Image("file:src/main/resources/black_pawn.png");
@@ -97,11 +99,10 @@ public class Game {
     }
 
     private void markClicked(int x, int y) {
-        Rectangle rectangle = new Rectangle(62.5,62);
+        Rectangle rectangle = new Rectangle(60.5,60.5);
         rectangle.setFill(Color.TRANSPARENT);
         rectangle.setStroke(Color.AQUAMARINE);
-//        rectangle.setBlendMode(BlendMode.SOFT_LIGHT);
-        rectangle.setStrokeWidth(2.5);
+        rectangle.setStrokeWidth(2);
 
         gridPane.add(rectangle, oldX, oldY);
     }
