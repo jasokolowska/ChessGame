@@ -60,7 +60,7 @@ public class BoardView extends Application {
         grid.setVgap(0);
         setColumnWidthAndRowHeight(grid, 59.5, 59.5);
         grid.setBackground(background);
-        grid.setGridLinesVisible(true);
+
         return grid;
     }
 

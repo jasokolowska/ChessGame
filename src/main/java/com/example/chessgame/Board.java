@@ -46,7 +46,7 @@ public class Board {
             if (targetFigure instanceof None ||
                     (targetFigure instanceof Figure && !targetFigure.getColor().equals(figure.getColor()))) {
 
-                List<Coordinates> currentMoves = availableMoves(row1, col1, row2, col2, figure);
+                List<Coordinates> currentMoves = availableMoves(row1, col1);
                 if (currentMoves.size() > 0) {
                     moveFigure(row1, col1, row2, col2, figure);
                     this.whiteCheck = checkIfKingCanBeCaptured(FigureColor.WHITE);
@@ -72,8 +72,6 @@ public class Board {
     }
 
     private void checkIfCheckMate() {
-        System.out.println("wywolanie metody checkIfCheckMate()");
-
         if (whiteCheck == true) {
             Coordinates kingCoor = getKingCoordinates(FigureColor.WHITE);
             int kingRow = kingCoor.getRow();
@@ -85,8 +83,7 @@ public class Board {
 
             for (Coordinates possibleMove : possibleMoves) {
                 //dla każdego mozliwego ruchu króla, sprawdzam, które ruchy sa dostępne
-                List<Coordinates> availableMoves = availableMoves(kingRow, kingCol, possibleMove.getRow(),
-                        possibleMove.getColumn(), getFigure(kingRow, kingCol));
+                List<Coordinates> availableMoves = availableMoves(kingRow, kingCol);
                 //dla każdego dostępnego ruchu króla sprawdzam czy tam nie będzie szacha
                 for (Coordinates availableMove : availableMoves) {
                     if (checkIfKingCanBeCaptured(FigureColor.WHITE)) {
@@ -113,8 +110,7 @@ public class Board {
                     return true;
                     //zaslonic krola przed szachem wlasna bierka
                 } else if (kingCanBeHidden(kingCoordinates, coordinates, opponentCoor)) {
-                    System.out.println(availableMoves(opponentCoor.getRow(), opponentCoor.getColumn(), kingCoordinates.getRow(), kingCoordinates.getColumn(),
-                            getFigure(opponentCoor.getRow(), opponentCoor.getColumn())));
+                    System.out.println(availableMoves(opponentCoor.getRow(), opponentCoor.getColumn()));
                     System.out.println("coordinates: " + coordinates);
                     return true;
                 }
@@ -124,48 +120,59 @@ public class Board {
     }
 
     private boolean kingCanBeHidden(Coordinates kingCoordinates, Coordinates coordinates, Coordinates opponentCoor) {
-        return availableMoves(opponentCoor.getRow(), opponentCoor.getColumn(), kingCoordinates.getRow(), kingCoordinates.getColumn(),
-                getFigure(opponentCoor.getRow(), opponentCoor.getColumn())).contains(coordinates);
+        return availableMoves(opponentCoor.getRow(), opponentCoor.getColumn()).contains(coordinates);
     }
 
     private boolean figureCanBeBeaten(Coordinates coordinates, Coordinates opponentCoor) {
-        return availableMoves(coordinates.getRow(), coordinates.getColumn(), opponentCoor.getRow(), opponentCoor.getColumn(),
-                getFigure(coordinates.getRow(), coordinates.getColumn())).contains(opponentCoor);
+        return availableMoves(coordinates.getRow(), coordinates.getColumn()).contains(opponentCoor);
     }
 
-    public List<Coordinates> availableMoves(int row1, int col1, int row2, int col2, Figure figure) {
+    public List<Coordinates> availableMoves(int row1, int col1) {
 
         List<Coordinates> availableMoves = new LinkedList<>();
-        List<Coordinates> possibleMoves = figure.checkPossibleMoves(row1, col1);
-
-        int rowFactor = getFactor(row1, row2);
-        int colFactor = getFactor(col1, col2);
+        List<Coordinates> possibleMoves = getFigure(row1, col1).checkPossibleMoves(row1, col1);
+        Figure figure = getFigure(row1, col1);
 
         if (figure instanceof Knight) {
-            return possibleMoves;
-        } else if (figure instanceof Pawn && colFactor != 0 && getFigure(row2, col2) instanceof None) {
-            System.out.println("Pawn can only move diagonally when capturing the piece");
-        } else {
-
-            Coordinates endPoint = new Coordinates(row2, col2);
-
-            while (!endPoint.equals(new Coordinates(row1, col1))) {
-
-                row1 += rowFactor;
-                col1 += colFactor;
-
-                if (row1 < 8 && row1 > -1 && col1 < 8 && col1 > -1) {
-
-                    if ((!(getFigure(row1, col1) instanceof None)) && (!endPoint.equals(new Coordinates(row1, col1)))) {
-//                    System.out.println("This piece cannot leap over other piece");
-                        break;
-                    } else if (possibleMoves.contains(new Coordinates(row1, col1))) {
-                        availableMoves.add(new Coordinates(row1, col1));
+            for (Coordinates possibleMove : possibleMoves) {
+                    if (getFigure(possibleMove.getRow(), possibleMove.getColumn()) instanceof None) {
+                        availableMoves.add(possibleMove);
+                    } else if (!getFigure(possibleMove.getRow(), possibleMove.getColumn()).getColor().equals(figure.getColor())) {
+                        availableMoves.add(possibleMove);
                     }
                 }
+            return availableMoves;
+//        } else if (figure instanceof Pawn && colFactor != 0 && getFigure(row2, col2) instanceof None) {
+//            System.out.println("Pawn can only move diagonally when capturing the piece");
+        } else {
+            for (Coordinates possibleMove : possibleMoves) {
+                int rowFactor = getFactor(row1, possibleMove.getRow());
+                int colFactor = getFactor(col1, possibleMove.getColumn());
+                int row = row1;
+                int col = col1;
+
+                do {
+                    row += rowFactor;
+                    col += colFactor;
+
+                    if (row > 7 || col > 7 || row < 0 || col < 0) {
+                        break;
+                    } else if (!isFigureNone(row, col) && (!possibleMove.equals(new Coordinates(row, col)))) {
+                        break;
+                    } else if (getFigure(row, col).getColor().equals(figure.getColor())) {
+                        break;
+                    } else {
+                        availableMoves.add(new Coordinates(row, col));
+                    }
+                } while (!(new Coordinates(row, col)).equals(possibleMove));
             }
         }
-        return availableMoves;
+
+        return  availableMoves;
+    }
+
+    private boolean isFigureNone(int row, int col) {
+        return getFigure(row, col) instanceof None;
     }
 
     public boolean checkIfKingCanBeCaptured(FigureColor figureColor) {
@@ -186,7 +193,7 @@ public class Board {
 
                 if (!(figure instanceof None) && figure.getColor() == opponentsColor) {
 
-                    if (availableMoves(row, col, kingRow, kingCol, figure).contains(kingCoordinates)) {
+                    if (availableMoves(row, col).contains(kingCoordinates)) {
                         System.out.println(figureColor + " King is not protected - CHECK");
                         coordinatesCapturingKing.add(new Coordinates(row, col));
                         if (figureColor == FigureColor.WHITE) {

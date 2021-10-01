@@ -1,12 +1,11 @@
 package com.example.chessgame;
 
 import com.example.chessgame.figures.*;
-import javafx.geometry.Pos;
-import javafx.scene.effect.BlendMode;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.GridPane;
 import javafx.scene.paint.Color;
+import javafx.scene.shape.Circle;
 import javafx.scene.shape.Rectangle;
 
 import java.util.List;
@@ -43,7 +42,8 @@ public class Game {
         if (oldX == -1){
             oldX = x;
             oldY = y;
-            markClicked(y, x);
+            markClickedFigure(y, x);
+            markAvailableMoves(y, x);
         }else {
             if (board.move(oldY, oldX, y, x)){
                 oldX = -1;
@@ -98,12 +98,24 @@ public class Game {
 
     }
 
-    private void markClicked(int x, int y) {
+    private void markClickedFigure(int x, int y) {
         Rectangle rectangle = new Rectangle(60.5,60.5);
         rectangle.setFill(Color.TRANSPARENT);
         rectangle.setStroke(Color.AQUAMARINE);
         rectangle.setStrokeWidth(2);
 
         gridPane.add(rectangle, oldX, oldY);
+    }
+
+    private void markSpot(int x, int y) {
+        Circle circle = new Circle(25,Color.AQUAMARINE);
+        gridPane.add(circle, x, y);
+    }
+
+    private void markAvailableMoves(int row, int col) {
+        List<Coordinates> movesCoordinates = board.availableMoves(row, col);
+        for (Coordinates moveCoordinate : movesCoordinates) {
+            markSpot(moveCoordinate.getColumn(), moveCoordinate.getRow());
+        }
     }
 }
