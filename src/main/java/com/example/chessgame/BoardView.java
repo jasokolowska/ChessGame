@@ -1,21 +1,32 @@
 package com.example.chessgame;
 
 import javafx.application.Application;
+import javafx.beans.property.BooleanProperty;
+import javafx.beans.property.BooleanPropertyBase;
+import javafx.beans.property.SimpleBooleanProperty;
+import javafx.beans.value.ChangeListener;
+import javafx.beans.value.ObservableValue;
 import javafx.event.EventType;
 import javafx.fxml.FXMLLoader;
 import javafx.geometry.*;
 import javafx.scene.Group;
 import javafx.scene.ImageCursor;
 import javafx.scene.Scene;
+import javafx.scene.control.Label;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
+import javafx.scene.shape.Circle;
 import javafx.scene.shape.Rectangle;
+import javafx.stage.Popup;
+import javafx.stage.PopupWindow;
 import javafx.stage.Stage;
+import javafx.stage.Window;
 
 import java.io.IOException;
+import java.util.EventListener;
 import java.util.List;
 
 public class BoardView extends Application {
@@ -25,9 +36,28 @@ public class BoardView extends Application {
     public void start(Stage stage) throws Exception {
         GridPane grid = getGridPane();
 
+        Popup popup = new Popup();
+        popup.setAutoHide(true);
+        popup.setAutoFix(true);
+        Label popupLabel = new Label("Game Over");
+        popupLabel.setStyle("-fx-background-color:blue;"
+                + " -fx-text-fill: black;"
+                + " -fx-font-size: 12;"
+                + " -fx-padding: 10px;"
+                + " -fx-background-radius: 6;");
+        popup.getContent().add(popupLabel);
+
         Scene scene = new Scene(grid, 480, 480, Color.WHITE);
         Game game = new Game(new Board(), grid);
 
+        BooleanProperty isEndOfGame = new SimpleBooleanProperty(game.isEndOfGame());
+
+        isEndOfGame.addListener(new ChangeListener<Boolean>() {
+            @Override
+            public void changed(ObservableValue<? extends Boolean> observable, Boolean oldValue, Boolean newValue) {
+                popup.show(stage);
+            }
+        });
 
         grid.setOnMouseClicked(e -> {
             System.out.println(e.getX());
@@ -44,7 +74,7 @@ public class BoardView extends Application {
         stage.setTitle("Chess");
         stage.setScene(scene);
         stage.show();
-
+//        popup.show(stage);
 
     }
 

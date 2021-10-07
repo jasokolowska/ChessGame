@@ -44,14 +44,18 @@ public class Board {
 
         if (figure.getColor().equals(figureColor)) {
             if (targetFigure instanceof None ||
-                    (targetFigure instanceof Figure && !targetFigure.getColor().equals(figure.getColor()))) {
+                    (targetFigure != null && !targetFigure.getColor().equals(figure.getColor()))) {
 
                 List<Coordinates> currentMoves = availableMoves(row1, col1);
-                if (currentMoves.size() > 0) {
+                if (currentMoves.contains(new Coordinates(row2, col2))) {
                     moveFigure(row1, col1, row2, col2, figure);
                     this.whiteCheck = checkIfKingCanBeCaptured(FigureColor.WHITE);
                     this.blackCheck = checkIfKingCanBeCaptured(FigureColor.BLACK);
-                    checkIfCheckMate();
+                    if (whiteCheck) {
+                        checkIfCheckMate(FigureColor.WHITE);
+                    } else if (blackCheck) {
+                        checkIfCheckMate(FigureColor.BLACK);
+                    }
                     return true;
                 } else {
                     System.out.println("This piece cannot be moved to this destination field - this move is not allowed");
@@ -63,6 +67,7 @@ public class Board {
             }
         } else if (figure.getColor().equals(FigureColor.NONE)) {
             System.out.println("There is no piece on this field, try again");
+            //dodac jakies resetowanie, np. jak nacisnie sie 2 razy na tym samym polu to mozna wykonac ruch inna bierka
             return false;
         } else {
             System.out.println("Now is the move of Player " + figureColor);
@@ -71,56 +76,54 @@ public class Board {
 
     }
 
-    private void checkIfCheckMate() {
-        if (whiteCheck == true) {
-            Coordinates kingCoor = getKingCoordinates(FigureColor.WHITE);
-            int kingRow = kingCoor.getRow();
-            int kingCol = kingCoor.getColumn();
+    private void checkIfCheckMate(FigureColor figureColor) {
+        System.out.println("Checking if check mate...");
+            int kingRow = getKingCoordinates(figureColor).getRow();
+            int kingCol = getKingCoordinates(figureColor).getColumn();
+
+            List<Coordinates> availableMoves = availableMoves(kingRow, kingCol);
             int i = 0;
             int matCount = 0;
-            List<Coordinates> possibleMoves = getFigure(kingRow, kingCol).
-                    checkPossibleMoves(kingRow, kingCol);
 
-            for (Coordinates possibleMove : possibleMoves) {
-                //dla każdego mozliwego ruchu króla, sprawdzam, które ruchy sa dostępne
-                List<Coordinates> availableMoves = availableMoves(kingRow, kingCol);
-                //dla każdego dostępnego ruchu króla sprawdzam czy tam nie będzie szacha
-                for (Coordinates availableMove : availableMoves) {
-                    if (checkIfKingCanBeCaptured(FigureColor.WHITE)) {
-                        matCount++;
-                    }
-                    i++;
+            for (Coordinates availableMove : availableMoves) {
+                if (checkIfKingCanBeCaptured(figureColor)) {
+                    matCount++;
                 }
+                i++;
             }
 
             if (matCount == i && checkIfKingCanBeProtected()) {
-                this.whiteMate = true;
+                if (figureColor == FigureColor.WHITE) {
+                    this.whiteMate = true;
+                } else {
+                    this.blackMate = true;
+                }
                 System.out.println("Szach Mat");
             }
-        }
     }
 
     private boolean checkIfKingCanBeProtected() {
+        System.out.println("Check if king can be protected");
         Coordinates kingCoordinates = getKingCoordinates(figureColor);
 
         for (Coordinates coordinates : figuresList) {
             for (Coordinates opponentCoor : coordinatesCapturingKing) {
 
                 if (figureCanBeBeaten(coordinates, opponentCoor)) {
-                    return true;
-                    //zaslonic krola przed szachem wlasna bierka
-                } else if (kingCanBeHidden(kingCoordinates, coordinates, opponentCoor)) {
+                    System.out.println("Figure can be beaten - true");
+                    return false;
+                } else if (kingCanBeHidden(kingCoordinates, opponentCoor)) {
                     System.out.println(availableMoves(opponentCoor.getRow(), opponentCoor.getColumn()));
                     System.out.println("coordinates: " + coordinates);
-                    return true;
+                    return false;
                 }
             }
         }
-        return false;
+        return true;
     }
 
-    private boolean kingCanBeHidden(Coordinates kingCoordinates, Coordinates coordinates, Coordinates opponentCoor) {
-        return availableMoves(opponentCoor.getRow(), opponentCoor.getColumn()).contains(coordinates);
+    private boolean kingCanBeHidden(Coordinates kingCoordinates, Coordinates opponentCoor) {
+        return availableMoves(opponentCoor.getRow(), opponentCoor.getColumn()).contains(kingCoordinates);
     }
 
     private boolean figureCanBeBeaten(Coordinates coordinates, Coordinates opponentCoor) {
@@ -133,17 +136,27 @@ public class Board {
         List<Coordinates> possibleMoves = getFigure(row1, col1).checkPossibleMoves(row1, col1);
         Figure figure = getFigure(row1, col1);
 
+
         if (figure instanceof Knight) {
             for (Coordinates possibleMove : possibleMoves) {
-                    if (getFigure(possibleMove.getRow(), possibleMove.getColumn()) instanceof None) {
-                        availableMoves.add(possibleMove);
-                    } else if (!getFigure(possibleMove.getRow(), possibleMove.getColumn()).getColor().equals(figure.getColor())) {
+                if (getFigure(possibleMove.getRow(), possibleMove.getColumn()) instanceof None) {
+                    availableMoves.add(possibleMove);
+                } else if (!getFigure(possibleMove.getRow(), possibleMove.getColumn()).getColor().equals(figure.getColor())) {
+                    availableMoves.add(possibleMove);
+                }
+            }
+            return availableMoves;
+        } else if (figure instanceof Pawn) {
+            for (Coordinates possibleMove : possibleMoves) {
+                if (getFigure(possibleMove.getRow(), possibleMove.getColumn()) instanceof None) {
+                    if (possibleMove.getColumn() == col1) {
                         availableMoves.add(possibleMove);
                     }
+                } else if (!getFigure(possibleMove.getRow(), possibleMove.getColumn()).getColor().equals(figure.getColor())
+                        && possibleMove.getColumn() != col1) {
+                        availableMoves.add(possibleMove);
                 }
-            return availableMoves;
-//        } else if (figure instanceof Pawn && colFactor != 0 && getFigure(row2, col2) instanceof None) {
-//            System.out.println("Pawn can only move diagonally when capturing the piece");
+            }
         } else {
             for (Coordinates possibleMove : possibleMoves) {
                 int rowFactor = getFactor(row1, possibleMove.getRow());
@@ -168,7 +181,7 @@ public class Board {
             }
         }
 
-        return  availableMoves;
+        return availableMoves;
     }
 
     private boolean isFigureNone(int row, int col) {
@@ -177,15 +190,10 @@ public class Board {
 
     public boolean checkIfKingCanBeCaptured(FigureColor figureColor) {
 
-        //powinna sprawdzac jednoczesnie obydwu kroli (pozniej dodac algoryt, ze jesli jest szach to mozna ruszyc tylko krolem)
-        //mat to bedzie sprawdzenie dostepnych ruchow krola jesli byl szach i na tych ruchach wywolanie metody checkIfCheck, jesli na kazdym z tych ruchow jest bicie to znaczy, ze mat
         Coordinates kingCoordinates = getKingCoordinates(figureColor);
         FigureColor opponentsColor = (figureColor == FigureColor.WHITE) ? FigureColor.BLACK : FigureColor.WHITE;
         coordinatesCapturingKing = new LinkedList<>(); //czy potrzebne jest tworzenie listy na nowo?
         figuresList = new LinkedList<>();
-
-        int kingCol = kingCoordinates.getColumn();
-        int kingRow = kingCoordinates.getRow();
 
         for (int row = 0; row < 8; row++) {
             for (int col = 0; col < 8; col++) {
@@ -201,6 +209,7 @@ public class Board {
                         } else {
                             this.blackCheck = true;
                         }
+
                         return true;
                     }
                 } else if (!(figure instanceof None) && figure.getColor() == figureColor) {
@@ -238,6 +247,14 @@ public class Board {
     private void moveFigure(int row1, int col1, int row2, int col2, Figure figure) {
         setFigure(row1, col1, new None(FigureColor.NONE));
         setFigure(row2, col2, figure);
+    }
+
+    public boolean isWhiteMate() {
+        return whiteMate;
+    }
+
+    public boolean isBlackMate() {
+        return blackMate;
     }
 
     public void init() {

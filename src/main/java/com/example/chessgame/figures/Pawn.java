@@ -35,6 +35,6 @@ public class Pawn extends Figure {
             possibleMoves.add(new Coordinates((row + 2), col));
         }
 
-        return possibleMoves;
+        return validateCoordinates(possibleMoves);
     }
 }

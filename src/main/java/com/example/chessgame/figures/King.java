@@ -25,6 +25,6 @@ public class King extends Figure{
         possibleMoves.add(new Coordinates(row, col +1));
         possibleMoves.add(new Coordinates(row, col -1));
 
-        return possibleMoves;
+        return validateCoordinates(possibleMoves);
     }
 }

@@ -11,21 +11,21 @@ import javafx.scene.shape.Rectangle;
 import java.util.List;
 
 public class Game {
-    private Image whitePawn = new Image("file:src/main/resources/white_pawn.png");
-    private Image blackPawn = new Image("file:src/main/resources/black_pawn.png");
-    private Image whiteRook = new Image("file:src/main/resources/white_rook.png");
-    private Image blackRook = new Image("file:src/main/resources/black_rook.png");
-    private Image whiteKnight = new Image("file:src/main/resources/white_knight.png");
-    private Image blackKnight = new Image("file:src/main/resources/black_knight.png");
-    private Image whiteBishop = new Image("file:src/main/resources/white_bishop.png");
-    private Image blackBishop = new Image("file:src/main/resources/black_bishop.png");
-    private Image whiteQueen = new Image("file:src/main/resources/white_queen.png");
-    private Image blackQueen = new Image("file:src/main/resources/black_queen.png");
-    private Image whiteKing = new Image("file:src/main/resources/white_king.png");
-    private Image blackKing = new Image("file:src/main/resources/black_king.png");
+    private final Image whitePawn = new Image("file:src/main/resources/white_pawn.png");
+    private final Image blackPawn = new Image("file:src/main/resources/black_pawn.png");
+    private final Image whiteRook = new Image("file:src/main/resources/white_rook.png");
+    private final Image blackRook = new Image("file:src/main/resources/black_rook.png");
+    private final Image whiteKnight = new Image("file:src/main/resources/white_knight.png");
+    private final Image blackKnight = new Image("file:src/main/resources/black_knight.png");
+    private final Image whiteBishop = new Image("file:src/main/resources/white_bishop.png");
+    private final Image blackBishop = new Image("file:src/main/resources/black_bishop.png");
+    private final Image whiteQueen = new Image("file:src/main/resources/white_queen.png");
+    private final Image blackQueen = new Image("file:src/main/resources/black_queen.png");
+    private final Image whiteKing = new Image("file:src/main/resources/white_king.png");
+    private final Image blackKing = new Image("file:src/main/resources/black_king.png");
 
-    private Board board;
-    private GridPane gridPane;
+    private final Board board;
+    private final GridPane gridPane;
     private int oldX = -1;
     private int oldY = -1;
     private boolean endOfGame;
@@ -48,12 +48,16 @@ public class Game {
             if (board.move(oldY, oldX, y, x)){
                 oldX = -1;
                 oldY = -1;
-                displayOnGrid();
-                board.switchPlayer();
+                if (board.isBlackMate() || board.isWhiteMate()) {
+                    endOfGame = true;
+                } else {
+                    board.switchPlayer();
+                }
             } else {
                 oldX = -1;
                 oldY = -1;
             }
+            displayOnGrid();
         }
     }
 
@@ -109,6 +113,7 @@ public class Game {
 
     private void markSpot(int x, int y) {
         Circle circle = new Circle(25,Color.AQUAMARINE);
+        circle.setOpacity(0.5);
         gridPane.add(circle, x, y);
     }
 
@@ -117,5 +122,9 @@ public class Game {
         for (Coordinates moveCoordinate : movesCoordinates) {
             markSpot(moveCoordinate.getColumn(), moveCoordinate.getRow());
         }
+    }
+
+    public boolean isEndOfGame() {
+        return endOfGame;
     }
 }
