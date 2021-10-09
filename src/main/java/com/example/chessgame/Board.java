@@ -49,8 +49,11 @@ public class Board {
                 List<Coordinates> currentMoves = availableMoves(row1, col1);
                 if (currentMoves.contains(new Coordinates(row2, col2))) {
                     moveFigure(row1, col1, row2, col2, figure);
+                    System.out.println("************** POCZATEK *****************");
                     this.whiteCheck = checkIfKingCanBeCaptured(FigureColor.WHITE);
+                    System.out.println("________________________________________");
                     this.blackCheck = checkIfKingCanBeCaptured(FigureColor.BLACK);
+                    System.out.println("************ KONIEC **************");
                     if (whiteCheck) {
                         checkIfCheckMate(FigureColor.WHITE);
                     } else if (blackCheck) {
@@ -77,7 +80,7 @@ public class Board {
     }
 
     private void checkIfCheckMate(FigureColor figureColor) {
-        System.out.println("Checking if check mate...");
+        System.out.println("Checking if check mate FOR KING..." + figureColor);
             int kingRow = getKingCoordinates(figureColor).getRow();
             int kingCol = getKingCoordinates(figureColor).getColumn();
 
@@ -92,7 +95,7 @@ public class Board {
                 i++;
             }
 
-            if (matCount == i && checkIfKingCanBeProtected()) {
+            if (matCount == i && !checkIfKingCanBeProtected()) {
                 if (figureColor == FigureColor.WHITE) {
                     this.whiteMate = true;
                 } else {
@@ -103,27 +106,82 @@ public class Board {
     }
 
     private boolean checkIfKingCanBeProtected() {
-        System.out.println("Check if king can be protected");
-        Coordinates kingCoordinates = getKingCoordinates(figureColor);
 
-        for (Coordinates coordinates : figuresList) {
-            for (Coordinates opponentCoor : coordinatesCapturingKing) {
+        FigureColor opponentsColor = (figureColor == FigureColor.WHITE) ? FigureColor.BLACK : FigureColor.WHITE;
+        Coordinates kingCoordinates = getKingCoordinates(opponentsColor);
+        System.out.println("Check if king can be protected..." + opponentsColor);
+        List<Coordinates> figures = getCurrentFigures(opponentsColor);
+        List<Coordinates> figuresCapturingKing = getFiguresCapturingKing(kingCoordinates);
+
+        System.out.println("figure list: " + figures);
+        System.out.println("coordinates capturing king: " + figuresCapturingKing);
+
+        for (Coordinates coordinates : figures) {
+            for (Coordinates opponentCoor : figuresCapturingKing) {
 
                 if (figureCanBeBeaten(coordinates, opponentCoor)) {
-                    System.out.println("Figure can be beaten - true");
-                    return false;
-                } else if (kingCanBeHidden(kingCoordinates, opponentCoor)) {
-                    System.out.println(availableMoves(opponentCoor.getRow(), opponentCoor.getColumn()));
-                    System.out.println("coordinates: " + coordinates);
-                    return false;
+                    System.out.println("Figure can be beaten");
+                    return true;
+                } else if (kingCanBeHidden(kingCoordinates, opponentCoor, coordinates)) {
+                    System.out.println("Figure can be hide by "+ coordinates.getRow() + ", " + coordinates.getColumn());
+                    return true;
                 }
             }
         }
-        return true;
+        return false;
     }
 
-    private boolean kingCanBeHidden(Coordinates kingCoordinates, Coordinates opponentCoor) {
-        return availableMoves(opponentCoor.getRow(), opponentCoor.getColumn()).contains(kingCoordinates);
+    private List<Coordinates> getFiguresCapturingKing(Coordinates kingCoordinates) {
+        List<Coordinates> coordinatesCapturingKing = new LinkedList<>();
+
+        for (int row = 0; row < 8; row++) {
+            for (int col = 0; col < 8; col++) {
+                Figure figure = getFigure(row, col);
+
+                if (!(figure instanceof None) && figure.getColor() == figureColor) {
+
+                    if (availableMoves(row, col).contains(kingCoordinates)) {
+                        coordinatesCapturingKing.add(new Coordinates(row, col));
+                    }
+                }
+            }
+        }
+        return coordinatesCapturingKing;
+    }
+
+    private List<Coordinates> getCurrentFigures(FigureColor color) {
+        List<Coordinates> figuresList = new LinkedList<>();
+
+        for (int row = 0; row < 8; row++) {
+            for (int col = 0; col < 8; col++) {
+                Figure figure = getFigure(row, col);
+
+                 if (!(figure instanceof None) && !(figure instanceof King) && figure.getColor() == color) {
+                    figuresList.add(new Coordinates(row, col));
+                }
+            }
+        }
+        return figuresList;
+    }
+
+    private boolean kingCanBeHidden(Coordinates kingCoordinates, Coordinates opponentCoor, Coordinates figureCoordinates) {
+        int rowFactor = getFactor(opponentCoor.getRow(), kingCoordinates.getRow());
+        int colFactor = getFactor(opponentCoor.getColumn(), kingCoordinates.getColumn());
+        int row = opponentCoor.getRow();
+        int col = opponentCoor.getColumn();
+
+        do {
+            row += rowFactor;
+            col += colFactor;
+            System.out.println("row: " + row + " col: " + col);
+            System.out.println(kingCoordinates);
+            if (availableMoves(figureCoordinates.getRow(), figureCoordinates.getColumn()).contains(new Coordinates(row, col))) {
+                return true;
+            } else if (row > 7 || col > 7 || row < 0 || col < 0) {
+                break;
+            }
+        } while (!(new Coordinates(row, col)).equals(kingCoordinates));
+        return false;
     }
 
     private boolean figureCanBeBeaten(Coordinates coordinates, Coordinates opponentCoor) {
@@ -190,32 +248,14 @@ public class Board {
 
     public boolean checkIfKingCanBeCaptured(FigureColor figureColor) {
 
+        System.out.println("Check if king can be captured: " + figureColor);
+
         Coordinates kingCoordinates = getKingCoordinates(figureColor);
-        FigureColor opponentsColor = (figureColor == FigureColor.WHITE) ? FigureColor.BLACK : FigureColor.WHITE;
-        coordinatesCapturingKing = new LinkedList<>(); //czy potrzebne jest tworzenie listy na nowo?
-        figuresList = new LinkedList<>();
+        List<Coordinates> figuresCapturingKing = getFiguresCapturingKing(kingCoordinates);
 
-        for (int row = 0; row < 8; row++) {
-            for (int col = 0; col < 8; col++) {
-                Figure figure = getFigure(row, col);
-
-                if (!(figure instanceof None) && figure.getColor() == opponentsColor) {
-
-                    if (availableMoves(row, col).contains(kingCoordinates)) {
-                        System.out.println(figureColor + " King is not protected - CHECK");
-                        coordinatesCapturingKing.add(new Coordinates(row, col));
-                        if (figureColor == FigureColor.WHITE) {
-                            this.whiteCheck = true;
-                        } else {
-                            this.blackCheck = true;
-                        }
-
-                        return true;
-                    }
-                } else if (!(figure instanceof None) && figure.getColor() == figureColor) {
-                    figuresList.add(new Coordinates(row, col));
-                }
-            }
+        if (figuresCapturingKing.size() > 0) {
+            System.out.println(figureColor + " King is not protected - CHECK");
+            return true;
         }
 
         System.out.println(figureColor + " King is protected");

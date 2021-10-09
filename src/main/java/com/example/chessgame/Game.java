@@ -1,6 +1,8 @@
 package com.example.chessgame;
 
 import com.example.chessgame.figures.*;
+import javafx.beans.property.BooleanProperty;
+import javafx.beans.property.SimpleBooleanProperty;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.GridPane;
@@ -28,12 +30,12 @@ public class Game {
     private final GridPane gridPane;
     private int oldX = -1;
     private int oldY = -1;
-    private boolean endOfGame;
+    private BooleanProperty endOfGame;
 
     public Game(Board board, GridPane gridPane) {
         this.board = board;
         this.gridPane = gridPane;
-        this.endOfGame = false;
+        this.endOfGame = new SimpleBooleanProperty(false);
         board.init();
         displayOnGrid();
     }
@@ -49,7 +51,7 @@ public class Game {
                 oldX = -1;
                 oldY = -1;
                 if (board.isBlackMate() || board.isWhiteMate()) {
-                    endOfGame = true;
+                    endOfGame.setValue(true);
                 } else {
                     board.switchPlayer();
                 }
@@ -124,7 +126,7 @@ public class Game {
         }
     }
 
-    public boolean isEndOfGame() {
+    public BooleanProperty isEndOfGame() {
         return endOfGame;
     }
 }

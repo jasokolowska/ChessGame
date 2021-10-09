@@ -39,7 +39,7 @@ public class BoardView extends Application {
         Popup popup = new Popup();
         popup.setAutoHide(true);
         popup.setAutoFix(true);
-        Label popupLabel = new Label("Game Over");
+        Label popupLabel = new Label("Szach Mat");
         popupLabel.setStyle("-fx-background-color:blue;"
                 + " -fx-text-fill: black;"
                 + " -fx-font-size: 12;"
@@ -50,9 +50,7 @@ public class BoardView extends Application {
         Scene scene = new Scene(grid, 480, 480, Color.WHITE);
         Game game = new Game(new Board(), grid);
 
-        BooleanProperty isEndOfGame = new SimpleBooleanProperty(game.isEndOfGame());
-
-        isEndOfGame.addListener(new ChangeListener<Boolean>() {
+        game.isEndOfGame().addListener(new ChangeListener<Boolean>() {
             @Override
             public void changed(ObservableValue<? extends Boolean> observable, Boolean oldValue, Boolean newValue) {
                 popup.show(stage);
