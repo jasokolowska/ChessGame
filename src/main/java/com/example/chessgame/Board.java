@@ -312,6 +312,7 @@ public class Board {
     }
 
     public void init() {
+        clearBoard();
 
         for (int i = 0; i < 8; i++) {
             setFigure(1, i, new Pawn(FigureColor.BLACK));
@@ -336,6 +337,19 @@ public class Board {
         setFigure(7, 3, new Queen(FigureColor.WHITE));
         setFigure(7, 4, new King(FigureColor.WHITE));
 
+
+    }
+
+    private void clearBoard() {
+        for (int i = 0; i < 8; i++) {
+            for (int j = 0; j < 8; j++) {
+                setFigure(j, i, new None(FigureColor.NONE));
+            }
+        }
+        whiteCheck = false;
+        blackCheck = false;
+        whiteMate = false;
+        blackMate = false;
 
     }
 

@@ -1,9 +1,12 @@
 package com.example.chessgame;
 
 import com.example.chessgame.figures.*;
+import javafx.application.Platform;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.scene.Node;
+import javafx.scene.control.ButtonType;
+import javafx.scene.control.Dialog;
 import javafx.scene.control.DialogPane;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
@@ -13,6 +16,7 @@ import javafx.scene.shape.Circle;
 import javafx.scene.shape.Rectangle;
 
 import java.util.List;
+import java.util.Optional;
 
 public class Game {
     private final Image whitePawn = new Image("file:src/main/resources/white_pawn.png");
@@ -50,23 +54,39 @@ public class Game {
             if (board.move(oldY, oldX, y, x)){
                 oldX = -1;
                 oldY = -1;
-                if (board.isBlackMate() || board.isWhiteMate()) {
-                    gridPane.getChildren().add(displayDialog());
-                } else {
-                    board.switchPlayer();
-                }
             } else {
                 oldX = -1;
                 oldY = -1;
             }
+
             displayOnGrid();
+
+            if (board.isBlackMate() || board.isWhiteMate()) {
+                displayDialog();
+            } else {
+                board.switchPlayer();
+            }
         }
     }
 
-    private DialogPane displayDialog() {
-        DialogPane dialogPane = new DialogPane();
-        dialogPane.setContentText("Szach Mat!\n" + board.getFigureColor() + " Player wins");
-        return dialogPane;
+    private void displayDialog() {
+        Dialog<ButtonType> dialog = new Dialog<>();
+        dialog.initOwner(gridPane.getScene().getWindow());
+        dialog.setTitle("Check Mate");
+        dialog.setContentText("Check Mate!\n" + board.getFigureColor() + " Player wins\n" +
+                "Click OK to play another round or Close to exit");
+
+        dialog.getDialogPane().getButtonTypes().add(ButtonType.OK);
+        dialog.getDialogPane().getButtonTypes().add(ButtonType.CLOSE);
+
+        Optional<ButtonType> result = dialog.showAndWait();
+        if (result.isPresent() && result.get() == ButtonType.OK) {
+            gridPane.getChildren().clear();
+            board.init();
+            displayOnGrid();
+        } else if (result.isPresent() && result.get() == ButtonType.CLOSE) {
+            Platform.exit();
+        }
     }
 
     private void displayOnGrid() {
