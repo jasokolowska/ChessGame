@@ -52,7 +52,7 @@ public class Board {
                     moveFigure(row1, col1, row2, col2, figure);
                     
                     System.out.println("************** POCZATEK *****************");
-                    if (checkIfKingCanBeCaptured(figureColor)) {
+                    if (checkIfKingCanBeCaptured(figureColor, getKingCoordinates(figureColor))) {
                         System.out.println("King is not protected - CHECK " + figureColor);
                         System.out.println("This move is not allowed - you need to protect the King");
                         moveFigure(row2, col2, row1, col1, figure);
@@ -65,7 +65,7 @@ public class Board {
                         System.out.println(figureColor + " King is protected");
                     }
                     System.out.println("________________________________________");
-                    if(checkIfKingCanBeCaptured(opponentColor)) {
+                    if(checkIfKingCanBeCaptured(opponentColor, getKingCoordinates(opponentColor))) {
                         System.out.println("King is not protected - CHECK " + opponentColor);
                         if (checkIfCheckMate(opponentColor)) {
                             System.out.println("Check Mate!");
@@ -113,10 +113,11 @@ public class Board {
 
     private boolean checkIfKingCanRun(FigureColor figureColor, Coordinates kingCoordinates) {
         List<Coordinates> availableMoves = availableMoves(kingCoordinates.getRow(), kingCoordinates.getColumn());
-
+        System.out.println("Check if king can run, king available moves: " + availableMoves);
         int matCount = 0;
-        for (int j = 0; j < availableMoves.size(); j++) {
-            if (checkIfKingCanBeCaptured(figureColor)) {
+
+        for (Coordinates availableMove : availableMoves) {
+            if (checkIfKingCanBeCaptured(figureColor, availableMove)) {
                 matCount++;
             }
         }
@@ -268,11 +269,10 @@ public class Board {
         return getFigure(row, col) instanceof None;
     }
 
-    public boolean checkIfKingCanBeCaptured(FigureColor figureColor) {
+    public boolean checkIfKingCanBeCaptured(FigureColor figureColor, Coordinates kingCoordinates) {
 
         System.out.println("Check if king can be captured: " + figureColor);
 
-        Coordinates kingCoordinates = getKingCoordinates(figureColor);
         List<Coordinates> figuresCapturingKing = getFiguresCapturingKing(kingCoordinates);
         System.out.println("Figures capturing king: " + figuresCapturingKing);
 

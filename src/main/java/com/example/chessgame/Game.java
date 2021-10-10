@@ -52,14 +52,14 @@ public class Game {
             markAvailableMoves(y, x);
         }else {
             if (board.move(oldY, oldX, y, x)){
-                oldX = -1;
-                oldY = -1;
                 if (board.isBlackMate() || board.isWhiteMate()) {
                     displayDialog();
                 } else {
                     board.switchPlayer();
                 }
             }
+            oldX = -1;
+            oldY = -1;
             displayOnGrid();
         }
     }
