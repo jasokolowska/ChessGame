@@ -3,6 +3,8 @@ package com.example.chessgame;
 import com.example.chessgame.figures.*;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.SimpleBooleanProperty;
+import javafx.scene.Node;
+import javafx.scene.control.DialogPane;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.GridPane;
@@ -30,12 +32,10 @@ public class Game {
     private final GridPane gridPane;
     private int oldX = -1;
     private int oldY = -1;
-    private BooleanProperty endOfGame;
 
     public Game(Board board, GridPane gridPane) {
         this.board = board;
         this.gridPane = gridPane;
-        this.endOfGame = new SimpleBooleanProperty(false);
         board.init();
         displayOnGrid();
     }
@@ -51,7 +51,7 @@ public class Game {
                 oldX = -1;
                 oldY = -1;
                 if (board.isBlackMate() || board.isWhiteMate()) {
-                    endOfGame.setValue(true);
+                    gridPane.getChildren().add(displayDialog());
                 } else {
                     board.switchPlayer();
                 }
@@ -61,6 +61,12 @@ public class Game {
             }
             displayOnGrid();
         }
+    }
+
+    private DialogPane displayDialog() {
+        DialogPane dialogPane = new DialogPane();
+        dialogPane.setContentText("Szach Mat!\n" + board.getFigureColor() + " Player wins");
+        return dialogPane;
     }
 
     private void displayOnGrid() {
@@ -124,9 +130,5 @@ public class Game {
         for (Coordinates moveCoordinate : movesCoordinates) {
             markSpot(moveCoordinate.getColumn(), moveCoordinate.getRow());
         }
-    }
-
-    public BooleanProperty isEndOfGame() {
-        return endOfGame;
     }
 }

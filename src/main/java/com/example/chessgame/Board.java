@@ -49,17 +49,24 @@ public class Board {
                 List<Coordinates> currentMoves = availableMoves(row1, col1);
                 if (currentMoves.contains(new Coordinates(row2, col2))) {
                     moveFigure(row1, col1, row2, col2, figure);
+                    
                     System.out.println("************** POCZATEK *****************");
-                    this.whiteCheck = checkIfKingCanBeCaptured(FigureColor.WHITE);
-                    System.out.println("________________________________________");
-                    this.blackCheck = checkIfKingCanBeCaptured(FigureColor.BLACK);
-                    System.out.println("************ KONIEC **************");
-                    if (whiteCheck) {
+                    if (checkIfKingCanBeCaptured(FigureColor.WHITE)) {
+                        System.out.println("King is not protected - CHECK " + FigureColor.WHITE);
                         checkIfCheckMate(FigureColor.WHITE);
-                    } else if (blackCheck) {
-                        checkIfCheckMate(FigureColor.BLACK);
+                    } else {
+                        System.out.println(FigureColor.WHITE + " King is protected");
                     }
+                    System.out.println("________________________________________");
+                    if(checkIfKingCanBeCaptured(FigureColor.BLACK)) {
+                        System.out.println("King is not protected - CHECK " + FigureColor.BLACK);
+                        checkIfCheckMate(FigureColor.BLACK);
+                    } else {
+                        System.out.println(FigureColor.BLACK + " King is protected");
+                    }
+                    System.out.println("************ KONIEC **************");
                     return true;
+                    
                 } else {
                     System.out.println("This piece cannot be moved to this destination field - this move is not allowed");
                     return false;
@@ -81,21 +88,9 @@ public class Board {
 
     private void checkIfCheckMate(FigureColor figureColor) {
         System.out.println("Checking if check mate FOR KING..." + figureColor);
-            int kingRow = getKingCoordinates(figureColor).getRow();
-            int kingCol = getKingCoordinates(figureColor).getColumn();
+        Coordinates kingCoordinates = getKingCoordinates(figureColor);
 
-            List<Coordinates> availableMoves = availableMoves(kingRow, kingCol);
-            int i = 0;
-            int matCount = 0;
-
-            for (Coordinates availableMove : availableMoves) {
-                if (checkIfKingCanBeCaptured(figureColor)) {
-                    matCount++;
-                }
-                i++;
-            }
-
-            if (matCount == i && !checkIfKingCanBeProtected()) {
+        if (checkIfKingCanRun(figureColor, kingCoordinates) && !checkIfKingCanBeProtected(figureColor, kingCoordinates)) {
                 if (figureColor == FigureColor.WHITE) {
                     this.whiteMate = true;
                 } else {
@@ -103,14 +98,30 @@ public class Board {
                 }
                 System.out.println("Szach Mat");
             }
+        System.out.println("Checking if check mate FOR KING..." + figureColor + " completed");
     }
 
-    private boolean checkIfKingCanBeProtected() {
+    private boolean checkIfKingCanRun(FigureColor figureColor, Coordinates kingCoordinates) {
+        List<Coordinates> availableMoves = availableMoves(kingCoordinates.getRow(), kingCoordinates.getColumn());
 
-        FigureColor opponentsColor = (figureColor == FigureColor.WHITE) ? FigureColor.BLACK : FigureColor.WHITE;
-        Coordinates kingCoordinates = getKingCoordinates(opponentsColor);
-        System.out.println("Check if king can be protected..." + opponentsColor);
-        List<Coordinates> figures = getCurrentFigures(opponentsColor);
+        int matCount = 0;
+        for (int j = 0; j < availableMoves.size(); j++) {
+            if (checkIfKingCanBeCaptured(figureColor)) {
+                matCount++;
+            }
+        }
+
+        if (matCount == availableMoves.size()){
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    private boolean checkIfKingCanBeProtected(FigureColor figureColor, Coordinates kingCoordinates) {
+
+        System.out.println("Check if king can be protected..." + figureColor);
+        List<Coordinates> figures = getCurrentFigures(figureColor);
         List<Coordinates> figuresCapturingKing = getFiguresCapturingKing(kingCoordinates);
 
         System.out.println("figure list: " + figures);
@@ -133,12 +144,13 @@ public class Board {
 
     private List<Coordinates> getFiguresCapturingKing(Coordinates kingCoordinates) {
         List<Coordinates> coordinatesCapturingKing = new LinkedList<>();
+        Figure king = getFigure(kingCoordinates.getRow(), kingCoordinates.getColumn());
 
         for (int row = 0; row < 8; row++) {
             for (int col = 0; col < 8; col++) {
                 Figure figure = getFigure(row, col);
 
-                if (!(figure instanceof None) && figure.getColor() == figureColor) {
+                if (!(figure instanceof None) && figure.getColor() != king.getColor()) {
 
                     if (availableMoves(row, col).contains(kingCoordinates)) {
                         coordinatesCapturingKing.add(new Coordinates(row, col));
@@ -252,13 +264,11 @@ public class Board {
 
         Coordinates kingCoordinates = getKingCoordinates(figureColor);
         List<Coordinates> figuresCapturingKing = getFiguresCapturingKing(kingCoordinates);
+        System.out.println("Figures capturing king: " + figuresCapturingKing);
 
         if (figuresCapturingKing.size() > 0) {
-            System.out.println(figureColor + " King is not protected - CHECK");
             return true;
         }
-
-        System.out.println(figureColor + " King is protected");
         return false;
     }
 
@@ -295,6 +305,10 @@ public class Board {
 
     public boolean isBlackMate() {
         return blackMate;
+    }
+
+    public FigureColor getFigureColor() {
+        return figureColor;
     }
 
     public void init() {
