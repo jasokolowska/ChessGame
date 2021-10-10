@@ -54,18 +54,13 @@ public class Game {
             if (board.move(oldY, oldX, y, x)){
                 oldX = -1;
                 oldY = -1;
-            } else {
-                oldX = -1;
-                oldY = -1;
+                if (board.isBlackMate() || board.isWhiteMate()) {
+                    displayDialog();
+                } else {
+                    board.switchPlayer();
+                }
             }
-
             displayOnGrid();
-
-            if (board.isBlackMate() || board.isWhiteMate()) {
-                displayDialog();
-            } else {
-                board.switchPlayer();
-            }
         }
     }
 

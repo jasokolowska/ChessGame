@@ -41,6 +41,7 @@ public class Board {
 
         Figure figure = getFigure(row1, col1);
         Figure targetFigure = getFigure(row2, col2);
+        FigureColor opponentColor = (figureColor == FigureColor.WHITE) ? FigureColor.BLACK : FigureColor.WHITE;
 
         if (figure.getColor().equals(figureColor)) {
             if (targetFigure instanceof None ||
@@ -51,18 +52,26 @@ public class Board {
                     moveFigure(row1, col1, row2, col2, figure);
                     
                     System.out.println("************** POCZATEK *****************");
-                    if (checkIfKingCanBeCaptured(FigureColor.WHITE)) {
-                        System.out.println("King is not protected - CHECK " + FigureColor.WHITE);
-                        checkIfCheckMate(FigureColor.WHITE);
+                    if (checkIfKingCanBeCaptured(figureColor)) {
+                        System.out.println("King is not protected - CHECK " + figureColor);
+                        System.out.println("This move is not allowed - you need to protect the King");
+                        moveFigure(row2, col2, row1, col1, figure);
+                        return false;
+//                        if (checkIfCheckMate(figureColor)) {
+//                            System.out.println("This move is not allowed - you need to protect the King");
+//                            return false;
+//                        }
                     } else {
-                        System.out.println(FigureColor.WHITE + " King is protected");
+                        System.out.println(figureColor + " King is protected");
                     }
                     System.out.println("________________________________________");
-                    if(checkIfKingCanBeCaptured(FigureColor.BLACK)) {
-                        System.out.println("King is not protected - CHECK " + FigureColor.BLACK);
-                        checkIfCheckMate(FigureColor.BLACK);
+                    if(checkIfKingCanBeCaptured(opponentColor)) {
+                        System.out.println("King is not protected - CHECK " + opponentColor);
+                        if (checkIfCheckMate(opponentColor)) {
+                            System.out.println("Check Mate!");
+                        }
                     } else {
-                        System.out.println(FigureColor.BLACK + " King is protected");
+                        System.out.println(opponentColor + " King is protected");
                     }
                     System.out.println("************ KONIEC **************");
                     return true;
@@ -86,7 +95,7 @@ public class Board {
 
     }
 
-    private void checkIfCheckMate(FigureColor figureColor) {
+    private boolean checkIfCheckMate(FigureColor figureColor) {
         System.out.println("Checking if check mate FOR KING..." + figureColor);
         Coordinates kingCoordinates = getKingCoordinates(figureColor);
 
@@ -96,9 +105,10 @@ public class Board {
                 } else {
                     this.blackMate = true;
                 }
-                System.out.println("Szach Mat");
+                return true;
             }
         System.out.println("Checking if check mate FOR KING..." + figureColor + " completed");
+        return false;
     }
 
     private boolean checkIfKingCanRun(FigureColor figureColor, Coordinates kingCoordinates) {
