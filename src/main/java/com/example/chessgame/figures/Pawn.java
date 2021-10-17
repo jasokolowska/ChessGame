@@ -37,4 +37,9 @@ public class Pawn extends Figure {
 
         return validateCoordinates(possibleMoves);
     }
+
+    @Override
+    public int getValue() {
+        return 10;
+    }
 }

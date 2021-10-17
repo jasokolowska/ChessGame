@@ -27,4 +27,9 @@ public class King extends Figure{
 
         return validateCoordinates(possibleMoves);
     }
+
+    @Override
+    public int getValue() {
+        return 900;
+    }
 }

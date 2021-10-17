@@ -26,4 +26,9 @@ public class Rook extends Figure{
 
         return possibleMoves;
     }
+
+    @Override
+    public int getValue() {
+        return 50;
+    }
 }

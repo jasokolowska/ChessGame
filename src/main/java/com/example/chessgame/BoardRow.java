@@ -10,7 +10,7 @@ import java.util.LinkedList;
 import java.util.List;
 
 public class BoardRow {
-    private List<Figure> row;
+    public List<Figure> row;
 
     public BoardRow() {
         this.row = new LinkedList<>();
@@ -37,6 +37,10 @@ public class BoardRow {
     public void setFigure(int col, Figure figure){
         row.remove(col);
         row.add(col, figure);
+    }
+
+    public List<Figure> getRow() {
+        return row;
     }
 
     @Override

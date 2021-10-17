@@ -33,4 +33,9 @@ public class Bishop extends Figure{
 
         return possibleMoves;
     }
+
+    @Override
+    public int getValue() {
+        return 30;
+    }
 }

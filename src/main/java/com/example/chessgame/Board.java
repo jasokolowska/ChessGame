@@ -6,14 +6,10 @@ import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 
-public class Board {
+public class Board  extends Prototype<Board>{
 
-    private final List<BoardRow> board = new LinkedList<>();
+    private List<BoardRow> board = new LinkedList<>();
     private FigureColor figureColor = FigureColor.WHITE;
-    List<Coordinates> coordinatesCapturingKing;
-    List<Coordinates> figuresList;
-    private boolean whiteCheck = false;
-    private boolean blackCheck = false;
     private boolean whiteMate = false;
     private boolean blackMate = false;
 
@@ -25,6 +21,22 @@ public class Board {
 
     public void switchPlayer() {
         figureColor = (figureColor == FigureColor.WHITE) ? FigureColor.BLACK : FigureColor.WHITE;
+        System.out.println("Player switched");
+    }
+
+    public void computerMove() {
+        try {
+            AI ai = new AI(deepCopy());
+            List<Coordinates> moveCoordinates = ai.generateMoveCoordinates();
+            System.out.println("Move coordinates generated");
+            move(moveCoordinates.get(0).getRow(),
+                    moveCoordinates.get(0).getColumn(),
+                    moveCoordinates.get(1).getRow(),
+                    moveCoordinates.get(1).getColumn());
+        } catch (CloneNotSupportedException e) {
+            e.getStackTrace();
+        }
+        switchPlayer();
     }
 
     public Figure getFigure(int row, int col) {
@@ -122,11 +134,7 @@ public class Board {
             }
         }
 
-        if (matCount == availableMoves.size()){
-            return true;
-        } else {
-            return false;
-        }
+        return matCount == availableMoves.size();
     }
 
     private boolean checkIfKingCanBeProtected(FigureColor figureColor, Coordinates kingCoordinates) {
@@ -172,7 +180,7 @@ public class Board {
         return coordinatesCapturingKing;
     }
 
-    private List<Coordinates> getCurrentFigures(FigureColor color) {
+    public List<Coordinates> getCurrentFigures(FigureColor color) {
         List<Coordinates> figuresList = new LinkedList<>();
 
         for (int row = 0; row < 8; row++) {
@@ -356,11 +364,30 @@ public class Board {
                 setFigure(j, i, new None(FigureColor.NONE));
             }
         }
-        whiteCheck = false;
-        blackCheck = false;
+        boolean whiteCheck = false;
+        boolean blackCheck = false;
         whiteMate = false;
         blackMate = false;
 
+    }
+
+    public List<BoardRow> getBoard() {
+        return board;
+    }
+
+    public Board deepCopy() throws CloneNotSupportedException {
+        Board cloneBoard = super.clone();
+        cloneBoard.board = new LinkedList<>();
+
+        for (BoardRow boardRow : board) {
+            BoardRow clonedBoardRow = new BoardRow();
+            clonedBoardRow.row = new LinkedList<>();
+            for (Figure figure : boardRow.getRow()) {
+                clonedBoardRow.getRow().add(figure);
+            }
+            cloneBoard.getBoard().add(clonedBoardRow);
+        }
+        return cloneBoard;
     }
 
 

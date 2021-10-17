@@ -2,12 +2,8 @@ package com.example.chessgame;
 
 import com.example.chessgame.figures.*;
 import javafx.application.Platform;
-import javafx.beans.property.BooleanProperty;
-import javafx.beans.property.SimpleBooleanProperty;
-import javafx.scene.Node;
 import javafx.scene.control.ButtonType;
 import javafx.scene.control.Dialog;
-import javafx.scene.control.DialogPane;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.GridPane;
@@ -52,10 +48,12 @@ public class Game {
             markAvailableMoves(y, x);
         }else {
             if (board.move(oldY, oldX, y, x)){
+                displayOnGrid();
                 if (board.isBlackMate() || board.isWhiteMate()) {
                     displayDialog();
                 } else {
                     board.switchPlayer();
+                    board.computerMove();
                 }
             }
             oldX = -1;

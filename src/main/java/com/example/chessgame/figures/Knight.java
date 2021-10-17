@@ -33,4 +33,9 @@ public class Knight extends Figure{
         }
         return coordinates;
     }
+
+    @Override
+    public int getValue() {
+        return 30;
+    }
 }

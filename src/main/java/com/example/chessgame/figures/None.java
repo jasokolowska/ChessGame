@@ -6,4 +6,9 @@ public class None extends Figure {
         super(color);
         super.symbol = " ";
     }
+
+    @Override
+    public int getValue() {
+        return 0;
+    }
 }

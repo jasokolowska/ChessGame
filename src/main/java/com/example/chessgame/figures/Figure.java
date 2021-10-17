@@ -40,4 +40,5 @@ public abstract class Figure {
                 .collect(Collectors.toList());
     }
 
+    public abstract int getValue();
 }
